@@ -25,12 +25,12 @@ import {
   FindOneReturn,
   UpdateReturn,
 } from './interfaces/return-interfaces';
-
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
-// import { AuthGuard } from 'src/auth/auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
 
 // @SkipThrottle()
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}

@@ -1,12 +1,4 @@
-import {
-  IsBoolean,
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { CreateTagDto } from 'src/modules/tags/dtos/create-tag.dto';
 
 export class UpdateProfileDto {
@@ -16,12 +8,8 @@ export class UpdateProfileDto {
   @IsNotEmpty()
   countryName: string;
 
-  @IsDate()
-  birthday: Date;
-
-  @IsNumber()
   @IsNotEmpty()
-  yearsWorking: number;
+  birthday: Date;
 
   @MaxLength(300)
   @MinLength(3)
@@ -35,18 +23,10 @@ export class UpdateProfileDto {
   @IsNotEmpty()
   job: string;
 
-  @IsBoolean()
-  remoteJob: boolean;
-
-  @MinLength(50)
+  @MinLength(10)
   @IsString()
   @IsNotEmpty()
   urlImg: string;
-
-  @MinLength(50)
-  @IsString()
-  @IsNotEmpty()
-  website: string;
 
   tags: CreateTagDto[];
 }

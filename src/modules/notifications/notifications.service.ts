@@ -110,21 +110,21 @@ export class NotificationsService {
         createNotificationsDto,
       );
 
-      const { data } = await this.userServices.findByPk(
-        createNotificationsDto.userId,
-      );
+      // const { data } = await this.userServices.findByPk(
+      //   createNotificationsDto.userId,
+      // );
 
-      if (!data)
-        throw new HttpException(
-          {
-            statusCode: 400,
-            method: 'POST',
-            message: 'Failed to create new Notification',
-            path: '/notifications',
-            timestamp: Date.now(),
-          },
-          HttpStatus.NOT_FOUND,
-        );
+      // if (!data)
+      //   throw new HttpException(
+      //     {
+      //       statusCode: 400,
+      //       method: 'POST',
+      //       message: 'Failed to create new Notification',
+      //       path: '/notifications',
+      //       timestamp: Date.now(),
+      //     },
+      //     HttpStatus.NOT_FOUND,
+      //   );
 
       const {
         id,
@@ -138,7 +138,7 @@ export class NotificationsService {
         createdAt,
       } = await this.notificationsRepository.save({
         ...notificationToSave,
-        user: data,
+        // user: data,
       });
       return {
         statusCode: 201,

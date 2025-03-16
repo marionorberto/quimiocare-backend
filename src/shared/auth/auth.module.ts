@@ -9,7 +9,7 @@ import { UsersModule } from 'src/modules/users/users.module';
   imports: [
     UsersModule,
     JwtModule.register({
-      global: true, //This means that we don't need to import the JwtModule anywhere else in our application.
+      global: true, //This means that we don't need to import the JwtModule anywhere else in our application
       secret: jwtContants.secret,
       signOptions: {
         expiresIn: '7d',

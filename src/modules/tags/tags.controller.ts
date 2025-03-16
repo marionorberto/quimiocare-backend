@@ -10,6 +10,10 @@ import {
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { UpdateTagDto } from './dtos/update-tag.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
+
+@UseGuards(AuthGuard)
 @Controller('tags')
 export class TagsController {
   constructor(private tagsService: TagsService) {}

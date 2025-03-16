@@ -18,7 +18,10 @@ import { PostComments } from '../posts-comments/posts-comments.entity';
 import { PostLikes } from '../posts-likes/posts-likes.entity';
 import { PostSaved } from '../posts-saved/posts-saved.entity';
 import { Tags } from '../tags/tags.entity';
-// import { UserSymptom } from '../user-symptoms/user-symptoms.entity';
+import { Symptom } from '../symptoms/symptom.entity';
+import { Medication } from '../medications/medication.entity';
+import { Appointment } from '../appointment/appointment.entity';
+import { EnumTypeUser } from 'src/modules/users/interfaces/interfaces';
 
 @Entity('Users')
 export class User {
@@ -30,6 +33,14 @@ export class User {
 
   @Column({ name: 'email', type: 'varchar', length: '40', unique: true })
   email: string;
+
+  @Column({
+    name: 'type_user',
+    type: 'enum',
+    enum: EnumTypeUser,
+    default: EnumTypeUser.paciente,
+  })
+  typeUser: EnumTypeUser;
 
   @Column({ name: 'password_hash', type: 'text' })
   @Exclude()
@@ -63,11 +74,22 @@ export class User {
   @JoinTable()
   tags: Tags[];
 
+  @OneToMany(() => Symptom, (symptoms) => symptoms.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  symptoms: Symptom[];
 
-  // @OneToMany(() => UserSymptom, (symptoms) => symptoms.user, {
-  //   cascade: true,
-  // })
-  // symptoms: UserSymptom[];
+  @OneToMany(() => Medication, (medication) => medication.user, {
+    cascade: true,
+  })
+  medication: Medication[];
+
+  @OneToMany(() => Appointment, (appointment) => appointment.user, {
+    cascade: true,
+  })
+  appointment: Appointment[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

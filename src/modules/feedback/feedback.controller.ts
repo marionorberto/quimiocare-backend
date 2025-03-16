@@ -8,9 +8,10 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Post,
-  // UseGuards,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { CreateFeedbackDto  } from './dtos/create-feedback.dto';
+import { CreateFeedbackDto } from './dtos/create-feedback.dto';
 import { FeedbackService } from './feedback.service';
 import { UpdateFeedbackDto } from './dtos/update-feedback.dto';
 import {
@@ -20,13 +21,13 @@ import {
   FindOneReturn,
   UpdateReturn,
 } from './interfaces/return-interfaces';
-
+import { Request } from 'express';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
-// import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
 
-// @SkipThrottle()
-// @UseGuards(AuthGuard)
-@Controller('feedback')
+@SkipThrottle()
+@UseGuards(AuthGuard)
+@Controller('feedbacks')
 export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 
@@ -44,8 +45,11 @@ export class FeedbackController {
   }
 
   @Post('create/feedback')
-  async create(@Body() createfeebackDto: CreateFeedbackDto): Promise<CreateReturn> {
-    return await this.feedbackService.create(createfeebackDto);
+  async create(
+    @Body() createfeebackDto: CreateFeedbackDto,
+    @Req() request: Request,
+  ): Promise<CreateReturn> {
+    return await this.feedbackService.create(createfeebackDto, request);
   }
 
   @Put('update/feedback/:id')

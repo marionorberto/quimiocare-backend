@@ -6,22 +6,29 @@ import {
   Get,
   Put,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ProfileService } from './profiles.service';
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { Request } from 'express';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
+
 @Controller('profiles')
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
+  @UseGuards(AuthGuard)
   @Get('all')
-  async fillAll() {
+  async findAll() {
     return await this.profileService.findAll();
   }
 
-  @Get('profile/:id')
-  async findByPk(@Param('id') id: string) {
-    return await this.profileService.findByPk(id);
+  @UseGuards(AuthGuard)
+  @Get('single')
+  async findByPk(@Req() request: Request) {
+    return await this.profileService.findByPk(request);
   }
 
   @Post('create/profile')
@@ -29,6 +36,7 @@ export class ProfileController {
     return this.profileService.create(createProfileDto);
   }
 
+  @UseGuards(AuthGuard)
   @Put('update/profile/:id')
   async updateOne(
     @Param('id') id: string,
@@ -37,6 +45,7 @@ export class ProfileController {
     return this.profileService.updateOne(id, updateProfileDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('delete/profile/:id')
   async deleteOne(@Param('id') id: string) {
     return await this.profileService.deleteOne(id);

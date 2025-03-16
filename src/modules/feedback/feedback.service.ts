@@ -11,15 +11,15 @@ import {
   FindOneReturn,
   UpdateReturn,
 } from './interfaces/return-interfaces';
-import { User } from 'src/database/entities/users/user.entity';
+import { Request } from 'express';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class FeedbackService {
   constructor(
     @InjectRepository(UserFeedback)
     private readonly feedbackRepository: Repository<UserFeedback>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UsersService,
   ) {}
 
   async findAll(): Promise<FindAllReturn> {
@@ -33,7 +33,7 @@ export class FeedbackService {
       return {
         statusCode: 200,
         method: 'GET',
-        message: 'Feedback fetched sucessfully.',
+        message: 'all feedbacks fetched sucessfully.',
         data: [{ count: allFeedback.length }, allFeedback],
         path: '/feedback/all',
         timestamp: Date.now(),
@@ -103,44 +103,32 @@ export class FeedbackService {
     }
   }
 
-  async create(createFeedbackDto: CreateFeedbackDto): Promise<CreateReturn> {
+  async create(
+    createFeedbackDto: CreateFeedbackDto,
+    request: Request,
+  ): Promise<CreateReturn> {
     try {
+      const { idUserFromRequest } = request['user'];
 
-      const userData = await this.userRepository.findOneBy({ id: createFeedbackDto.userId });
+      const { data: userData } =
+        await this.userService.findByPk(idUserFromRequest);
 
-      if (!userData) {
-        throw new HttpException(
-          {
-            statusCode: 404,
-            method: 'GET',
-            message: 'User Not Found.',
-            path: '/users/create/user',
-            timestamp: Date.now(),
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      const feedbackToSave = this.feedbackRepository.create({
+        ...createFeedbackDto,
+        user: userData,
+      });
 
-      console.log(userData);
-
-      const feedbackToSave = this.feedbackRepository.create(createFeedbackDto);
-
-      feedbackToSave.user = userData;
-
-      const { id, user, avaliation, comment,  createdAt } =
-        await this.feedbackRepository.save({ ...feedbackToSave });
+      const { id, comment, avaliation, dateSent, user } =
+        await this.feedbackRepository.save({
+          ...feedbackToSave,
+          user: userData,
+        });
 
       return {
         statusCode: 201,
         method: 'feedback',
         message: 'feedback created sucessfully',
-        data: {
-          id,
-          userId: user.id,
-          avaliation,
-          comment,
-          createdAt
-        },
+        data: { id, comment, avaliation, dateSent, user },
         path: '/create/feedback',
         timestamp: Date.now(),
       };
@@ -170,14 +158,8 @@ export class FeedbackService {
     try {
       await this.feedbackRepository.update(id, updatefeedbacksDto);
 
-      const {
-        user,
-        avaliation,
-        comment,
-        
-        createdAt,
-        updatedAt,
-      } = await this.feedbackRepository.findOneBy({ id });
+      const { user, avaliation, comment, createdAt, updatedAt } =
+        await this.feedbackRepository.findOneBy({ id });
 
       return {
         statusCode: 200,
@@ -188,7 +170,7 @@ export class FeedbackService {
           user,
           avaliation,
           comment,
-               
+
           createdAt,
           updatedAt,
         },
@@ -242,7 +224,9 @@ export class FeedbackService {
         timestamp: Date.now(),
       };
     } catch (error) {
-      console.log(`Failed to delete feedback | Error Message: ${error.message}`);
+      console.log(
+        `Failed to delete feedback | Error Message: ${error.message}`,
+      );
 
       throw new HttpException(
         {
@@ -257,5 +241,4 @@ export class FeedbackService {
       );
     }
   }
-
 }

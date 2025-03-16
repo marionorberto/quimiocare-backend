@@ -6,6 +6,8 @@ import { CreateProfileDto } from './dtos/create-profile.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { User } from 'src/database/entities/users/user.entity';
 import { TagsService } from 'src/modules/tags/tags.service';
+import { Request } from 'express';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProfileService {
@@ -15,6 +17,7 @@ export class ProfileService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly tagsService: TagsService,
+    private readonly userService: UsersService,
   ) {}
 
   async findAll() {
@@ -54,21 +57,18 @@ export class ProfileService {
 
   async create(createProfileDto: CreateProfileDto) {
     try {
-      const userData = await this.userRepository.findOneBy({
-        id: createProfileDto.userId,
+      // const [lastUserCreated] = await this.userRepository.query(
+      //   'SELECT * FROM Users ORDER BY created_at DESC LIMIT 1',
+      // );
+
+      // Buscar o último usuário cadastrado
+      const [lastUserCreated] = await this.userRepository.find({
+        order: { createdAt: 'DESC' },
+        take: 1,
       });
 
-      if (!userData) {
-        throw new HttpException(
-          {
-            statusCode: 404,
-            method: 'GET',
-            message: 'User Not Found.',
-            path: '/users/create/user',
-            timestamp: Date.now(),
-          },
-          HttpStatus.NOT_FOUND,
-        );
+      if (!lastUserCreated) {
+        throw new Error('Nenhum usuário encontrado para criar perfil.');
       }
 
       const existingTags = await Promise.all(
@@ -91,27 +91,16 @@ export class ProfileService {
           HttpStatus.NOT_FOUND,
         );
       }
-      console.log(userData);
 
-      const profileToSave = this.profilesRepository.create(createProfileDto);
-
-      const profileSaved = await this.profilesRepository.save({
-        ...profileToSave,
+      const profileToSave = this.profilesRepository.create({
+        ...createProfileDto,
+        user: lastUserCreated,
         tags: existingTags,
-        user: userData,
       });
 
-      const {
-        id,
-        user,
-        height,
-        weight,
-        bio,
-        birthday,
-        urlImg,
-        tags,
-        createdAt,
-      } = profileSaved;
+      const profileSaved = await this.profilesRepository.save(profileToSave);
+
+      const { id, user, bio, birthday, urlImg, tags, createdAt } = profileSaved;
 
       return {
         statusCode: 201,
@@ -123,8 +112,6 @@ export class ProfileService {
           bio,
           birthday,
           urlImg,
-          height,
-          weight,
           tags,
           createdAt,
         },
@@ -150,35 +137,31 @@ export class ProfileService {
     }
   }
 
-  async findByPk(id: string) {
+  async findByPk(request: Request) {
     try {
-      const profile = await this.profilesRepository.findOne({
-        where: {
-          id,
-        },
-        relations: {
-          tags: true,
-          user: true,
-        },
-      });
+      const { idUser } = request['user'];
+      const idToString = String(idUser);
+      const [lastUserCreated] = await this.userRepository.query(
+        `SELECT * FROM User_Profiles where userId='${idToString}'`,
+      );
 
-      if (!profile)
-        throw new HttpException(
-          {
-            statusCode: 404,
-            method: 'GET',
-            message: 'Failure to fetch this profile.',
-            path: '/profiles',
-            timestamp: Date.now(),
-          },
-          HttpStatus.NOT_FOUND,
-        );
+      // if (!profile)
+      //   throw new HttpException(
+      //     {
+      //       statusCode: 404,
+      //       method: 'GET',
+      //       message: 'Failure to fetch this profile.',
+      //       path: '/profiles',
+      //       timestamp: Date.now(),
+      //     },
+      //     HttpStatus.NOT_FOUND,
+      //   );
 
       return {
         statusCode: 200,
         method: 'GET',
         message: 'Profile fetched sucessfully.',
-        data: profile,
+        data: lastUserCreated,
         path: '/profile',
         timestamp: Date.now(),
       };
@@ -205,17 +188,8 @@ export class ProfileService {
     try {
       await this.profilesRepository.update(id, updateTagDto);
 
-      const {
-        user,
-        birthday,
-        height,
-        weight,
-        bio,
-        tags,
-        urlImg,
-        createdAt,
-        updatedAt,
-      } = await this.profilesRepository.findOneBy({ id });
+      const { user, birthday, bio, tags, urlImg, createdAt, updatedAt } =
+        await this.profilesRepository.findOneBy({ id });
 
       return {
         statusCode: 200,
@@ -225,8 +199,6 @@ export class ProfileService {
           id,
           user,
           birthday,
-          height,
-          weight,
           bio,
           tags,
           urlImg,

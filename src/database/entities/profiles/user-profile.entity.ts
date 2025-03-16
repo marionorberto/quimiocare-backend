@@ -20,23 +20,36 @@ export class Profile {
   @Column({ name: 'birthday', type: 'date' })
   birthday: Date;
 
+  @Column({ name: 'sex', type: 'char' })
+  sex: string;
+
   @Column({ name: 'bio', type: 'text' })
   bio: string;
 
-  @Column({ name: 'weight', type: 'float'})
-  weight: number;
+  @Column({ name: 'country_name', type: 'varchar' })
+  countryName: string;
 
-  @Column({ name: 'height', type: 'float'})
-  height: number;
+  @Column({ name: 'job', type: 'varchar' })
+  job: string;
 
   @Column({ name: 'url_img', type: 'varchar' })
   urlImg: string;
+
+  @Column({ name: 'phone', type: 'varchar' })
+  phoneNumber: string;
+
+  @Column({ name: 'address', type: 'varchar' })
+  address: string;
 
   @ManyToMany(() => Tags, { cascade: true, eager: true })
   @JoinTable()
   tags: Tags[];
 
-  @OneToOne(() => User, { cascade: true })
+  @OneToOne(() => User, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn()
   user: User;
 
