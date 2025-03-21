@@ -57,11 +57,6 @@ export class ProfileService {
 
   async create(createProfileDto: CreateProfileDto) {
     try {
-      // const [lastUserCreated] = await this.userRepository.query(
-      //   'SELECT * FROM Users ORDER BY created_at DESC LIMIT 1',
-      // );
-
-      // Buscar o último usuário cadastrado
       const [lastUserCreated] = await this.userRepository.find({
         order: { createdAt: 'DESC' },
         take: 1,
@@ -140,28 +135,26 @@ export class ProfileService {
   async findByPk(request: Request) {
     try {
       const { idUser } = request['user'];
-      const idToString = String(idUser);
-      const [lastUserCreated] = await this.userRepository.query(
-        `SELECT * FROM User_Profiles where userId='${idToString}'`,
-      );
 
-      // if (!profile)
-      //   throw new HttpException(
-      //     {
-      //       statusCode: 404,
-      //       method: 'GET',
-      //       message: 'Failure to fetch this profile.',
-      //       path: '/profiles',
-      //       timestamp: Date.now(),
-      //     },
-      //     HttpStatus.NOT_FOUND,
-      //   );
+      const profile = await this.profilesRepository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.tags', 'tag')
+        .where('profile.userId = :userId', { userId: idUser })
+        .getOne();
 
       return {
         statusCode: 200,
         method: 'GET',
         message: 'Profile fetched sucessfully.',
-        data: lastUserCreated,
+        data: profile,
+        path: '/profile',
+        timestamp: Date.now(),
+      };
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'Profile fetched sucessfully.',
+        data: profile,
         path: '/profile',
         timestamp: Date.now(),
       };

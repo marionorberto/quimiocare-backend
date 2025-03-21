@@ -37,6 +37,7 @@ export class CreateAppointmentDto {
   @MaxLength(25, { message: 'A descrição deve ter no máximo 60 caracteres' })
   @MinLength(3, { message: 'A descrição deve ter no máximo 60 caracteres' })
   @IsString({ message: 'A descrição deve ter no máximo 60 caracteres' })
+  @IsOptional()
   statusAppointment: EnumAppointmentStatus;
 
   @IsString({ message: 'A Nota deve ser uma string!' })

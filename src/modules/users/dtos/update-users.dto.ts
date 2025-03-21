@@ -13,7 +13,7 @@ export class UpdateUsersDto {
   @IsString()
   username: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Por favor introduza um Email válido!' })
   @IsString({ message: 'O Email deve ser uma string!' })
   @MaxLength(50, { message: 'O Email deve ter no máximo 50 caracteres!' })
   @MinLength(12, { message: 'O Email deve ter no mínimo 12 caracteres!' })

@@ -35,7 +35,7 @@ export class Profile {
   @Column({ name: 'url_img', type: 'varchar' })
   urlImg: string;
 
-  @Column({ name: 'phone', type: 'varchar' })
+  @Column({ name: 'phone', type: 'varchar', nullable: true })
   phoneNumber: string;
 
   @Column({ name: 'address', type: 'varchar' })

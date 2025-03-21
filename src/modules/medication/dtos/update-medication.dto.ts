@@ -24,7 +24,6 @@ export class UpdateMedicationDto {
   @IsOptional()
   note: string;
 
-  @IsString({ message: 'O formato da hora deve ser uma string' })
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
     message: 'O formato da hora deve ser HH:mm (24 horas)',
   })

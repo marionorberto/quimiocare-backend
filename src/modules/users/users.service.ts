@@ -113,14 +113,14 @@ export class UsersService {
       };
     } catch (error) {
       console.log(
-        `Failed to create new User | Error Message: ${error.message}`,
+        `Failed  to create a new User | Error Message: ${error.message}`,
       );
 
       throw new HttpException(
         {
           statusCode: 400,
           method: 'POST',
-          message: 'Failed to create new User',
+          message: 'Falhou ao criar usuário, verifique os seus dados!',
           error: error.message,
           path: '/users/create/user',
           timestamp: Date.now(),
