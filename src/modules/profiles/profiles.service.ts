@@ -177,30 +177,39 @@ export class ProfileService {
     }
   }
 
-  async updateOne(id: string, updateTagDto: Partial<UpdateProfileDto>) {
+  async updateOne(request: Request, updateTagDto: Partial<UpdateProfileDto>) {
     try {
-      await this.profilesRepository.update(id, updateTagDto);
+      const { idUser } = request['user'];
 
-      const { user, birthday, bio, tags, urlImg, createdAt, updatedAt } =
-        await this.profilesRepository.findOneBy({ id });
-
-      return {
-        statusCode: 200,
-        method: 'PUT',
-        message: 'Profile updated sucessfully',
-        data: {
-          id,
-          user,
-          birthday,
-          bio,
-          tags,
-          urlImg,
-          createdAt,
-          updatedAt,
+      const profile = await this.profilesRepository.findOne({
+        where: {
+          user: idUser,
         },
-        path: '/profiles/profile/:id',
-        timestamp: Date.now(),
-      };
+      });
+      console.log(profile, updateTagDto);
+      return profile;
+      // await this.profilesRepository.update(profileId, updateTagDto);
+
+      // const { user, birthday, bio, tags, urlImg, createdAt, updatedAt } =
+      //   await this.profilesRepository.findOneBy({ id: profileId });
+
+      // return {
+      //   statusCode: 200,
+      //   method: 'PUT',
+      //   message: 'Profile updated sucessfully',
+      //   data: {
+      //     id,
+      //     user,
+      //     birthday,
+      //     bio,
+      //     tags,
+      //     urlImg,
+      //     createdAt,
+      //     updatedAt,
+      //   },
+      //   path: '/profiles/profile/:id',
+      //   timestamp: Date.now(),
+      // };
     } catch (error) {
       console.log(
         `Failed to update new Profile | Error Message: ${error.message}`,

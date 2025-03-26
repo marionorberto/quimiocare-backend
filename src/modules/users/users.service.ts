@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUsersDto } from './dtos/create-users.dto';
 import { UpdateUsersDto } from './dtos/update-users.dto';
-
+import * as bcryptjs from 'bcryptjs';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/database/entities/users/user.entity';
 import { Request } from 'express';
+import { UpdatePasswordDto } from './dtos/update-password.dto';
 @Injectable()
 export class UsersService {
   private userRepository: Repository<User>;
@@ -120,7 +121,7 @@ export class UsersService {
         {
           statusCode: 400,
           method: 'POST',
-          message: 'Falhou ao criar usuário, verifique os seus dados!',
+          message: `Falhou ao cadastrar usuário, ${error.message}`,
           error: error.message,
           path: '/users/create/user',
           timestamp: Date.now(),
@@ -130,8 +131,18 @@ export class UsersService {
     }
   }
 
-  async updateOne(id: string, updateUsersDto: Partial<UpdateUsersDto>) {
+  async updateOne(request: Request, updateUsersDto: Partial<UpdateUsersDto>) {
     try {
+      const { idUser: id } = request['user'];
+
+      if (updateUsersDto.password) {
+        const salt = await bcryptjs.genSalt(10);
+        updateUsersDto.password = await bcryptjs.hash(
+          updateUsersDto.password,
+          salt,
+        );
+      }
+
       await this.userRepository.update(id, updateUsersDto);
 
       const { username, email, createdAt, updatedAt } =
@@ -241,6 +252,99 @@ export class UsersService {
           message: 'Failed to fetch User',
           error: error.message,
           path: '/users/user/id',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updatePassword(
+    request: Request,
+    updatePasswordDTO: Partial<UpdatePasswordDto>,
+  ) {
+    try {
+      const { idUser: id } = request['user'];
+
+      const isPasswordEqual =
+        updatePasswordDTO.atualPassword === updatePasswordDTO.newPassword;
+
+      if (isPasswordEqual)
+        throw new HttpException(
+          {
+            statusCode: 404,
+            method: 'PUT',
+            message: 'Password devem ser iguais.',
+            path: '/password/user/update',
+            timestamp: Date.now(),
+          },
+          HttpStatus.NOT_FOUND,
+        );
+
+      const { password: passwordFromDB } = await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.password')
+        .where('user.id = :id', { id })
+        .getOne();
+
+      if (
+        !(await bcryptjs.compare(
+          updatePasswordDTO.atualPassword,
+          passwordFromDB,
+        ))
+      )
+        throw new HttpException(
+          {
+            statusCode: 404,
+            method: 'PUT',
+            message: 'A atual password é inválida.',
+            path: '/password/user/update',
+            timestamp: Date.now(),
+          },
+          HttpStatus.NOT_FOUND,
+        );
+
+      if (updatePasswordDTO.newPassword) {
+        const salt = await bcryptjs.genSalt(10);
+        updatePasswordDTO.newPassword = await bcryptjs.hash(
+          updatePasswordDTO.newPassword,
+          salt,
+        );
+      }
+
+      await this.userRepository.update(id, {
+        password: updatePasswordDTO.newPassword,
+      });
+
+      const { username, email, createdAt, updatedAt } =
+        await this.userRepository.findOneBy({ id });
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: 'Password updated sucessfully',
+        data: {
+          id,
+          username,
+          email,
+          createdAt,
+          updatedAt,
+        },
+        path: '/users/update/user/:id',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to update new password| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: 'Failed to update Password',
+          error: error.message,
+          path: '/users/password/user/update',
           timestamp: Date.now(),
         },
         HttpStatus.BAD_REQUEST,

@@ -24,7 +24,7 @@ export class AuthService {
           {
             statusCode: 401,
             method: 'POST',
-            message: 'Email not found.',
+            message: 'Email não encontrado.',
             path: '/auth/login',
             timestamp: Date.now(),
           },
@@ -42,7 +42,7 @@ export class AuthService {
           {
             statusCode: 401,
             method: 'POST',
-            message: 'USER PASSWORD Not Invalid.',
+            message: 'password inválida.',
             path: '/auth/login',
             timestamp: Date.now(),
           },

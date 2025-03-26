@@ -58,5 +58,6 @@ export class UpdateProfileDto {
   urlImg: string;
 
   @IsNotEmpty({ message: 'O tipo de cancer não pode estar vazio' })
+  @IsOptional()
   tags: CreateTagDto[];
 }

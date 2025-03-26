@@ -37,12 +37,12 @@ export class ProfileController {
   }
 
   @UseGuards(AuthGuard)
-  @Put('update/profile/:id')
+  @Put('update/profile')
   async updateOne(
-    @Param('id') id: string,
+    @Req() request: Request,
     @Body() updateProfileDto: Partial<UpdateProfileDto>,
   ) {
-    return this.profileService.updateOne(id, updateProfileDto);
+    return this.profileService.updateOne(request, updateProfileDto);
   }
 
   @UseGuards(AuthGuard)

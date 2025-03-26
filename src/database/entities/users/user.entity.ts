@@ -97,8 +97,8 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
-  @BeforeInsert()
   @BeforeUpdate()
+  @BeforeInsert()
   async hashPassword() {
     if (this.password) {
       const salt = await bcryptjs.genSalt(10);
