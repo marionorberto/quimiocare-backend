@@ -3,13 +3,19 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
 import { UsersService } from 'src/modules/users/users.service';
 import { SignInDto } from './dtos/sign-in.dto';
+import { DataSource, Repository } from 'typeorm';
+import { User } from 'src/database/entities/users/user.entity';
 
 @Injectable()
 export class AuthService {
+  private userRepository: Repository<User>;
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-  ) {}
+    private readonly datasource: DataSource,
+  ) {
+    this.userRepository = this.datasource.getRepository(User);
+  }
 
   async signIn(signInDto: SignInDto): Promise<{ acess_token: string }> {
     try {

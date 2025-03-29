@@ -23,8 +23,12 @@ import { CancerStageModule } from './modules/cancer-stage/cancer-stage.module';
 import { CancerTypesModule } from './modules/cancer-types/cancer-types.module';
 import { MedicalInformationModule } from './modules/user-medical-information/medical-information.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
+// import { ServeStat } from '@nestjs/sta'
 @Module({
   imports: [
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'client'),
+    // }),
     ThrottlerModule.forRoot([
       {
         name: 'short',

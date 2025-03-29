@@ -11,17 +11,17 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ isGlobal: true }),
     MailerModule.forRoot({
       transport: {
-        service: process.env.MAIL_SERVICE,
-        host: process.env.MAIL_HOST,
-        port: Number(process.env.MAIL_PORT),
+        service: 'Gmail',
+        host: 'smtp.gmail.com',
+        port: Number('587'),
         secure: true,
         auth: {
-          user: process.env.MAIL_USERNAME,
-          pass: process.env.MAIL_PASSWORD,
+          user: 'eabhealth24@gmail.com',
+          pass: 'xpztvnnersoqimkj',
         },
       },
       defaults: {
-        from: `POSTABLE <${process.env.MAIL_FROM}>`,
+        from: `QUIMIOCARE <eabhealth24@gmail.com>`,
       },
       template: {
         dir: resolve(__dirname, 'templates'),

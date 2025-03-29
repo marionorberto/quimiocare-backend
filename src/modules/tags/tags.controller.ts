@@ -13,7 +13,6 @@ import { UpdateTagDto } from './dtos/update-tag.dto';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/shared/auth/auth.guard';
 
-@UseGuards(AuthGuard)
 @Controller('tags')
 export class TagsController {
   constructor(private tagsService: TagsService) {}
@@ -22,22 +21,24 @@ export class TagsController {
   async fillAll() {
     return await this.tagsService.findAll();
   }
-
+  @UseGuards(AuthGuard)
   @Get('tag/:id')
   async findByPk(@Param('id') id: string) {
     return await this.tagsService.findByPk(id);
   }
-
+  @UseGuards(AuthGuard)
   @Post('create/tag')
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagsService.create(createTagDto);
   }
 
+  @UseGuards(AuthGuard)
   @Put('update/tag/:id')
   async updateOne(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     return this.tagsService.updateOne(id, updateTagDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('delete/tag/:id')
   async deleteOne(@Param('id') id: string) {
     return await this.tagsService.deleteOne(id);

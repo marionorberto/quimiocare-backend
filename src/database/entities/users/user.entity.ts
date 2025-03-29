@@ -22,6 +22,7 @@ import { Symptom } from '../symptoms/symptom.entity';
 import { Medication } from '../medications/medication.entity';
 import { Appointment } from '../appointment/appointment.entity';
 import { EnumTypeUser } from 'src/modules/users/interfaces/interfaces';
+import { Daily } from '../daily/daily.entity';
 
 @Entity('Users')
 export class User {
@@ -65,6 +66,12 @@ export class User {
   })
   comments: PostComments[];
 
+  @Column({ name: 'reset_password_token', type: 'text', nullable: true })
+  resetPasswordToken: string;
+
+  @Column({ name: 'reset_password_expires', type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date;
+
   @OneToMany(() => PostSaved, (saved) => saved.user, {
     cascade: true,
   })
@@ -90,6 +97,9 @@ export class User {
     cascade: true,
   })
   appointment: Appointment[];
+
+  @OneToMany(() => Daily, (daily) => daily.user, { cascade: true })
+  daily: Daily[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
