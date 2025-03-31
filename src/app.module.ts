@@ -23,12 +23,14 @@ import { CancerStageModule } from './modules/cancer-stage/cancer-stage.module';
 import { CancerTypesModule } from './modules/cancer-types/cancer-types.module';
 import { MedicalInformationModule } from './modules/user-medical-information/medical-information.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
-// import { ServeStat } from '@nestjs/sta'
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'client'),
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '.upload'), // Pasta onde as imagens estão
+      serveRoot: '/uploads', // Define a rota para acessar os arquivos
+    }),
     ThrottlerModule.forRoot([
       {
         name: 'short',

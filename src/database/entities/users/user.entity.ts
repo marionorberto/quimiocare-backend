@@ -77,25 +77,21 @@ export class User {
   })
   saves: PostSaved[];
 
-  @ManyToMany(() => Tags, { cascade: true, eager: true })
+  @ManyToMany(() => Tags, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinTable()
   tags: Tags[];
 
-  @OneToMany(() => Symptom, (symptoms) => symptoms.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => Symptom, (symptoms) => symptoms.user)
   symptoms: Symptom[];
 
-  @OneToMany(() => Medication, (medication) => medication.user, {
-    cascade: true,
-  })
+  @OneToMany(() => Medication, (medication) => medication.user)
   medication: Medication[];
 
-  @OneToMany(() => Appointment, (appointment) => appointment.user, {
-    cascade: true,
-  })
+  @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointment: Appointment[];
 
   @OneToMany(() => Daily, (daily) => daily.user, { cascade: true })

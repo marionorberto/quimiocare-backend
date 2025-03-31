@@ -1,4 +1,10 @@
-import { Body, Controller, NotFoundException, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  NotFoundException,
+  Post,
+} from '@nestjs/common';
 import { SignInDto } from './dtos/sign-in.dto';
 import { AuthService } from './auth.service';
 import * as crypto from 'crypto';
@@ -6,6 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/modules/users/users.service';
 import { User } from 'src/database/entities/users/user.entity';
 import { EmailService } from 'src/modules/email/email.service';
+import * as bcryptjs from 'bcryptjs';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +26,6 @@ export class AuthController {
     this.userRepository = this.datasource.getRepository(User);
   }
 
-  // : Promise<{ acess_token: string }>
   @Post('login')
   async signIn(@Body() signInDto: SignInDto) {
     return await this.authService.signIn(signInDto);
@@ -38,12 +44,10 @@ export class AuthController {
     }
 
     const token = crypto.randomBytes(32).toString('hex'); // Gerar token único
-    console.log('this is - ', token);
     user.resetPasswordToken = token;
     user.resetPasswordExpires = new Date(Date.now() + 3600000); // Expira em 1h
     await this.userRepository.save(user);
 
-    // Enviar e-mail com o link de redefinição
     await this.mailService.sendEmail({
       to: user.email,
       username: user.username,
@@ -51,5 +55,23 @@ export class AuthController {
     });
 
     return { message: 'E-mail de recuperação enviado com sucesso' };
+  }
+
+  @Post('reset-password')
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.userRepository.findOne({
+      where: { resetPasswordToken: token },
+    });
+
+    if (!user || user.resetPasswordExpires < new Date()) {
+      throw new BadRequestException('Token inválido ou expirado');
+    }
+
+    user.password = await bcryptjs.hash(newPassword, 10);
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+    await this.userRepository.save(user);
+
+    return { message: 'Senha redefinida com sucesso' };
   }
 }

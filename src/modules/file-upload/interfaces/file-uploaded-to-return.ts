@@ -3,6 +3,7 @@ export interface FileUploadeToReturn {
   method: string;
   message: string;
   filePath: string;
+  filename: string;
   path: string;
   timestamp: number;
 }

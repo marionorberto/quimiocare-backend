@@ -43,7 +43,10 @@ export class Appointment {
   @Column({ name: 'note', type: 'text', nullable: true })
   note: string;
 
-  @ManyToOne(() => User, (user) => user.appointment)
+  @ManyToOne(() => User, (user) => user.appointment, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: User;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

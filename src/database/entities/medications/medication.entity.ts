@@ -24,7 +24,10 @@ export class Medication {
   @Column({ name: 'time_reminder', type: 'time' })
   timeReminder: Date;
 
-  @ManyToOne(() => User, (user) => user.medication)
+  @ManyToOne(() => User, (user) => user.medication, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: User;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

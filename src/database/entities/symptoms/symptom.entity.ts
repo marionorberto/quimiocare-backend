@@ -22,7 +22,10 @@ export class Symptom {
   @Column({ name: 'severity', type: 'enum', enum: EnumSymptomSeverity })
   severity: EnumSymptomSeverity;
 
-  @ManyToOne(() => User, (user) => user.symptoms)
+  @ManyToOne(() => User, (user) => user.symptoms, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: User;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

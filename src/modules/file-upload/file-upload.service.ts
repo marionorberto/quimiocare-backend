@@ -31,7 +31,7 @@ export class FileUploadService {
             statusCode: 400,
             method: 'POST',
             message: 'Invalid File Type.',
-            path: '/upload',
+            path: '/uploads',
             timestamp: Date.now(),
           },
           HttpStatus.BAD_REQUEST,
@@ -57,7 +57,8 @@ export class FileUploadService {
         method: 'POST',
         message: 'File Uploaded sucessfully',
         filePath: file.path,
-        path: '/upload',
+        filename: file.filename,
+        path: '/uploads',
         timestamp: Date.now(),
       };
     } catch (error) {
