@@ -20,8 +20,8 @@ import { Global, Module } from '@nestjs/common';
             password: 'Cavera?@mau2875',
             database: 'quimiocare',
             synchronize: true,
-            logging: false,
-            entities: [`${__dirname}/../database//**/**.entity{.ts,.js}`], // this will automatically load all entity file in the src folder
+            logging: true,
+            entities: [`${__dirname}/../database/**/**.entity{.ts,.js}`], // this will automatically load all entity file in the src folder
           });
           await dataSource.initialize(); // initialize the data source
           console.log('Database connected successfully');

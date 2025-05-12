@@ -6,9 +6,12 @@ import { DataSource, Repository } from 'typeorm';
 import { Tips } from 'src/database/entities/tips/tips.entity';
 import { TipsCategory } from 'src/database/entities/tips_category/tips_category.entity';
 import { TipsCategoryService } from '../tips-category/tips-category.service';
+import { Request } from 'express';
+import { User } from 'src/database/entities/users/user.entity';
 @Injectable()
 export class TipsService {
   private tipsRepository: Repository<Tips>;
+  private userRepo: Repository<User>;
   private tipsCategoryRepository: Repository<TipsCategory>;
   constructor(
     private readonly datasource: DataSource,
@@ -30,6 +33,44 @@ export class TipsService {
         statusCode: 200,
         method: 'GET',
         message: 'Tips fetched sucessfully.',
+        data: [{ count: alltips.length }, alltips],
+        path: '/Tips/all',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(`Failed to fetch Tips | Error Message: ${error.message}`);
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch Tips.',
+          path: '/Tips/create',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async myTips(request: Request) {
+    try {
+      const { idUser } = request['user'];
+
+      const alltips = await this.tipsRepository.find({
+        where: {
+          userDoctor: {
+            id: idUser,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'My tips  fetched sucessfully.',
         data: [{ count: alltips.length }, alltips],
         path: '/Tips/all',
         timestamp: Date.now(),
@@ -99,8 +140,12 @@ export class TipsService {
     }
   }
 
-  async create(createTipsDto: CreateTipsDto) {
+  async create(request: Request, createTipsDto: CreateTipsDto) {
     try {
+      const { idUser } = request['user'];
+
+      const user = await this.userRepo.findOneBy({ id: idUser });
+
       const { data: categoryGot } = await this.tipsCategoryService.findByPk(
         createTipsDto.category,
       );
@@ -120,18 +165,19 @@ export class TipsService {
 
       const tipsToSave = this.tipsRepository.create({
         description: createTipsDto.description,
+        userDoctor: user,
         category: categoryGot,
       });
 
       const tipsSaved = await this.tipsRepository.save(tipsToSave);
 
-      const { id, description, category, createdAt } = tipsSaved;
+      const { id, description, category, userDoctor, createdAt } = tipsSaved;
 
       return {
         statusCode: 201,
         method: 'POST',
         message: 'tips created sucessfully',
-        data: { id, description, category, createdAt },
+        data: { id, description, category, userDoctor, createdAt },
         path: '/tips/create/user',
         timestamp: Date.now(),
       };

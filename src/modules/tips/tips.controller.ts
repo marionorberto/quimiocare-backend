@@ -6,10 +6,14 @@ import {
   Post,
   Put,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TipsService } from './tips.service';
 import { CreateTipsDto } from './dtos/create-tips.dto';
 import { UpdateTipsDto } from './dtos/update-tips.dto';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
+import { Request } from 'express';
 
 @Controller('tips')
 export class TipsController {
@@ -20,14 +24,20 @@ export class TipsController {
     return await this.tipsServices.findAll();
   }
 
+  @UseGuards(AuthGuard)
+  @Get('my-tips')
+  async myTips(@Req() request: Request) {
+    return await this.tipsServices.myTips(request);
+  }
+
   @Get('tip')
   async findByPk() {
     return await this.tipsServices.findByPk();
   }
 
   @Post('create/tip')
-  create(@Body() createUserDto: CreateTipsDto) {
-    return this.tipsServices.create(createUserDto);
+  create(request: Request, @Body() createUserDto: CreateTipsDto) {
+    return this.tipsServices.create(request, createUserDto);
   }
 
   @Put('update/tip/:id')

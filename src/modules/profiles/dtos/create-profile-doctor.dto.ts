@@ -43,4 +43,8 @@ export class CreateProfileDoctorDto {
   @IsString({ message: 'hospital deve ser um string' })
   @IsNotEmpty({ message: 'hospital não pode estar vazio' })
   hospital: string;
+
+  @IsString({ message: 'Especialidade deve ser um string' })
+  @IsNotEmpty({ message: 'Especialidade não pode estar vazio' })
+  speciality: string;
 }

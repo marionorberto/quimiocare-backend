@@ -31,8 +31,10 @@ export class ProfileDoctor {
   @Column({ name: 'address', type: 'varchar' })
   address: string;
 
-  @Column({ name: 'hospital', type: 'varchar' })
   hospital: string;
+
+  @Column({ name: 'speciality', type: 'varchar' })
+  speciality: string;
 
   @OneToOne(() => User, {
     cascade: true,

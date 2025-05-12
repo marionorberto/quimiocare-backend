@@ -24,6 +24,7 @@ import { Appointment } from '../appointment/appointment.entity';
 import { EnumTypeUser } from 'src/modules/users/interfaces/interfaces';
 import { Daily } from '../daily/daily.entity';
 import { CollateralEffect } from '../collateral-effect/colllateral-effect.entity';
+import { Tips } from '../tips/tips.entity';
 
 @Entity('Users')
 export class User {
@@ -111,6 +112,9 @@ export class User {
     { cascade: true },
   )
   collateralEffect: CollateralEffect[];
+
+  @OneToMany(() => Tips, (tips) => tips.userDoctor)
+  tip: Tips[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
