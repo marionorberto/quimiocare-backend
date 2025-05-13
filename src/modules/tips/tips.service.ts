@@ -19,6 +19,7 @@ export class TipsService {
   ) {
     this.tipsRepository = this.datasource.getRepository(Tips);
     this.tipsCategoryRepository = this.datasource.getRepository(TipsCategory);
+    this.userRepo = this.datasource.getRepository(User);
   }
 
   async findAll() {
@@ -98,6 +99,7 @@ export class TipsService {
         },
         relations: {
           category: true,
+          userDoctor: true,
         },
       });
 
@@ -143,7 +145,7 @@ export class TipsService {
   async create(request: Request, createTipsDto: CreateTipsDto) {
     try {
       const { idUser } = request['user'];
-
+      console.log(idUser);
       const user = await this.userRepo.findOneBy({ id: idUser });
 
       const { data: categoryGot } = await this.tipsCategoryService.findByPk(

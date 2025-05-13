@@ -35,8 +35,9 @@ export class TipsController {
     return await this.tipsServices.findByPk();
   }
 
+  @UseGuards(AuthGuard)
   @Post('create/tip')
-  create(request: Request, @Body() createUserDto: CreateTipsDto) {
+  create(@Req() request: Request, @Body() createUserDto: CreateTipsDto) {
     return this.tipsServices.create(request, createUserDto);
   }
 
