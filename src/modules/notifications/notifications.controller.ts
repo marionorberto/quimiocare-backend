@@ -1,48 +1,46 @@
-import {
-  Controller,
-  Delete,
-  Param,
-  Post,
-  Body,
-  Get,
-  Put,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationsDto } from './dtos/create-notifications.dto';
-import { UpdateNotificationsDto } from './dtos/update-notifications.dto';
+import { AuthGuard } from 'src/shared/auth/auth.guard';
+import { Request } from 'express';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(private notificationsServices: NotificationsService) {}
 
-  @Get('all/:userId')
-  async findAll(@Param('userId') userId: string) {
-    return await this.notificationsServices.findAll(userId);
+  @UseGuards(AuthGuard)
+  @Get('all')
+  async findAll(@Req() request: Request) {
+    return await this.notificationsServices.findAll(request);
   }
 
-  @Get('notification/:idNotification')
-  async findByPk(@Param('idNotification') idNotification: string) {
-    return await this.notificationsServices.findByPk(idNotification);
-  }
+  // @Get('notification/:idNotification')
+  // async findByPk(@Param('idNotification') idNotification: string) {
+  //   return await this.notificationsServices.findByPk(idNotification);
+  // }
 
+  @UseGuards(AuthGuard)
   @Post('create/notification')
-  create(@Body() createNotificationsDto: CreateNotificationsDto) {
-    return this.notificationsServices.create(createNotificationsDto);
-  }
-
-  @Put('update/notification/:idNotification')
-  async updateOne(
-    @Param('idNotification') idNotification: string,
-    @Body() updateNotificationsDto: Partial<UpdateNotificationsDto>,
+  create(
+    @Req() request: Request,
+    @Body() createNotificationsDto: CreateNotificationsDto,
   ) {
-    return await this.notificationsServices.updateOne(
-      idNotification,
-      updateNotificationsDto,
-    );
+    return this.notificationsServices.create(request, createNotificationsDto);
   }
 
-  @Delete('delete/notification/:idNotification')
-  async deleteOne(@Param('idNotification') idNotification: string) {
-    return await this.notificationsServices.deleteOne(idNotification);
-  }
+  // @Put('update/notification/:idNotification')
+  // async updateOne(
+  //   @Param('idNotification') idNotification: string,
+  //   @Body() updateNotificationsDto: Partial<UpdateNotificationsDto>,
+  // ) {
+  //   return await this.notificationsServices.updateOne(
+  //     idNotification,
+  //     updateNotificationsDto,
+  //   );
+  // }
+
+  // @Delete('delete/notification/:idNotification')
+  // async deleteOne(@Param('idNotification') idNotification: string) {
+  //   return await this.notificationsServices.deleteOne(idNotification);
+  // }
 }

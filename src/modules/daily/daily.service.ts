@@ -269,4 +269,41 @@ export class DailysService {
       );
     }
   }
+
+  async already(request: Request) {
+    try {
+      const { idUser } = request['user'];
+
+      const [last] = await this.dailyRepository.find({
+        where: {
+          user: {
+            id: idUser,
+          },
+        },
+        order: { createdAt: 'DESC' },
+        take: 1,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'last daily fetched sucessfully.',
+        data: [last],
+        path: '/daily/last',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(`Failed to fetch daily | Error Message: ${error.message}`);
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch daily.',
+          path: '/daily/last',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

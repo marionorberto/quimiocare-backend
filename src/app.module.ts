@@ -27,6 +27,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { DailyModule } from './modules/daily/daily.module';
 import { ReceitaModule } from './modules/receitas/receitas.module';
+import { suggestVideo } from './database/entities/suggest/suggest.entity';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -71,6 +72,7 @@ import { ReceitaModule } from './modules/receitas/receitas.module';
     AppointmentModule,
     DailyModule,
     ReceitaModule,
+    suggestVideo,
   ],
   controllers: [AppController],
   providers: [

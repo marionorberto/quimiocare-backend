@@ -1,15 +1,38 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class UpdatePostDto {
-  @MaxLength(200)
+  @MaxLength(300)
   @MinLength(10)
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @MaxLength(50)
+  @MaxLength(300)
   @MinLength(10)
   @IsString()
   @IsNotEmpty()
-  posterImgLink: string;
+  @IsOptional()
+  subtitle?: string;
+
+  @MaxLength(300)
+  @MinLength(10)
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  img?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  tag: string;
 }

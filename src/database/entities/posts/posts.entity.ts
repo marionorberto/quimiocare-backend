@@ -3,52 +3,33 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PostsSections } from '../posts-sections/posts-sections.entity';
 import { User } from '../users/user.entity';
-import { PostComments } from '../posts-comments/posts-comments.entity';
-import { PostLikes } from '../posts-likes/posts-likes.entity';
-import { PostSaved } from '../posts-saved/posts-saved.entity';
-// import { TagPosts } from '../tagPost/tags-post.entity';
 
 @Entity('Posts')
 export class Posts {
   @PrimaryGeneratedColumn('uuid', { name: 'post_id' })
   id: string;
 
-  @ManyToOne(() => User, (user) => user.post)
-  user: User;
-
-  @Column({ name: 'title', type: 'varchar', unique: true })
+  @Column({ name: 'title', type: 'varchar' })
   title: string;
 
-  @Column({ name: 'link_poster_file', type: 'text' })
-  linkPosterFile: string;
+  @Column({ name: 'subtitle', type: 'varchar', nullable: true })
+  subtitle: string;
 
-  @OneToMany(() => PostsSections, (postSection) => postSection.post, {
-    cascade: true,
-  })
-  sections: PostsSections[];
+  @Column({ name: 'content', type: 'text' })
+  content: string;
 
-  @OneToMany(() => PostComments, (comment) => comment.post, {
-    cascade: true,
-  })
-  comments: PostComments[];
+  @Column({ name: 'img', type: 'text', nullable: true })
+  img: string;
 
-  @OneToMany(() => PostLikes, (like) => like.post, { cascade: true })
-  postLike: PostLikes[];
+  @Column({ name: 'tag', type: 'varchar', nullable: true })
+  tag: string;
 
-  @OneToMany(() => PostSaved, (saved) => saved.post, {
-    cascade: true,
-  })
-  saves: PostSaved[];
-
-  // @ManyToMany(() => TagPosts, { cascade: true, eager: true })
-  // @JoinTable()
-  // tags: TagPosts[];
+  @ManyToOne(() => User, (users) => users.post)
+  user: User;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

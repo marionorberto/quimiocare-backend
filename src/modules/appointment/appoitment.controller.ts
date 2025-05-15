@@ -54,4 +54,9 @@ export class AppointmentController {
   async deleteOne(@Param('id') id: string) {
     return await this.appointmentServices.deleteOne(id);
   }
+
+  @Get('last')
+  async last(@Req() request: Request) {
+    return await this.appointmentServices.last(request);
+  }
 }

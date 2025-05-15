@@ -63,6 +63,9 @@ export class TipsService {
             id: idUser,
           },
         },
+        relations: {
+          category: true,
+        },
         order: {
           createdAt: 'DESC',
         },

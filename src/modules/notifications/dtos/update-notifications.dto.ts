@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -9,32 +8,28 @@ import {
 
 export class UpdateNotificationsDto {
   @MaxLength(300)
-  @MinLength(30)
+  @MinLength(10)
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   title: string;
 
   @MaxLength(300)
-  @MinLength(30)
+  @MinLength(10)
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   subtitle?: string;
 
   @MaxLength(300)
-  @MinLength(30)
+  @MinLength(10)
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   content: string;
 
-  @IsBoolean()
-  @IsNotEmpty()
-  @IsOptional()
-  read?: boolean;
-
-  @MaxLength(60)
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  linkAction?: string;
+  img?: string;
 }

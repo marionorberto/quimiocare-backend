@@ -52,4 +52,9 @@ export class DailysController {
   async deleteOne(@Param('id') id: string) {
     return await this.dailyService.deleteOne(id);
   }
+
+  @Get('already')
+  async already(@Req() request: Request) {
+    return await this.dailyService.already(request);
+  }
 }

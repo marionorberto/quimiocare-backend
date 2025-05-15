@@ -10,6 +10,13 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { CreateProfileDoctorDto } from './dtos/create-profile-doctor.dto';
 import { ProfileDoctor } from 'src/database/entities/profiles-doctor/user-profile-doctor.entity';
+import { CreateSuggestYTDto } from './dtos/create-suggest.dto ';
+import { suggestVideo } from 'src/database/entities/suggest/suggest.entity';
+import { Daily } from 'src/database/entities/daily/daily.entity';
+import { Medication } from 'src/database/entities/medications/medication.entity';
+import { Appointment } from 'src/database/entities/appointment/appointment.entity';
+import { Symptom } from 'src/database/entities/symptoms/symptom.entity';
+import { CreateReportDto } from './dtos/create-report.dto';
 
 @Injectable()
 export class ProfileService {
@@ -20,8 +27,18 @@ export class ProfileService {
     private readonly profileDoctorRepository: Repository<ProfileDoctor>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(suggestVideo)
+    private readonly suggestVideoRepo: Repository<suggestVideo>,
     private readonly tagsService: TagsService,
     private readonly userService: UsersService,
+    @InjectRepository(Daily)
+    private readonly dailyRepository: Repository<Daily>,
+    @InjectRepository(Medication)
+    private readonly medicationRepository: Repository<Medication>,
+    @InjectRepository(Appointment)
+    private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(Symptom)
+    private readonly symptomRepository: Repository<Symptom>,
   ) {}
 
   async findAll() {
@@ -365,6 +382,144 @@ export class ProfileService {
           message: 'Failed to delete Profile',
           error: error.message,
           path: '/profiles/delete/profile/:id',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async suggestVideo(request: Request, createSuggestYTDto: CreateSuggestYTDto) {
+    try {
+      const { idUser: idUserFromRequest } = request['user'];
+
+      const userData = await this.userRepository.findOneBy({
+        id: idUserFromRequest,
+      });
+
+      const toSave = this.suggestVideoRepo.create({
+        ...createSuggestYTDto,
+        user: userData,
+      });
+
+      const saved = await this.suggestVideoRepo.save(toSave);
+
+      const { id, user, suggestion, createdAt } = saved;
+
+      return {
+        statusCode: 201,
+        method: 'POST',
+        message: 'Profile created sucessfully',
+        data: {
+          id,
+          user,
+          suggestion,
+          createdAt,
+        },
+        path: '/profiles/create/profile',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to create new Profile | Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'POST',
+          message: 'Failed to create new Profile',
+          error: error.message,
+          path: '/profiles/create/profile',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async report(request: Request, createReportDto: CreateReportDto) {
+    try {
+      const { idUser } = request['user'];
+
+      // const userData = await this.userRepository.findOneBy({
+      //   id: idUser,
+      // });
+
+      //symptom
+
+      const symptoms = await this.symptomRepository
+        .createQueryBuilder('symptom')
+        .where('symptom.userId = :userId', {
+          userId: idUser,
+        })
+        .andWhere('DATE(symptom.created_at) = :date', {
+          date: createReportDto.date,
+        })
+        .getMany();
+
+      //consultas
+
+      const appointments = await this.appointmentRepository
+        .createQueryBuilder('appointment')
+        .where('appointment.userId = :userId', {
+          userId: idUser,
+        })
+        .andWhere('DATE(appointment.created_at) = :date', {
+          date: createReportDto.date,
+        })
+        .getMany();
+
+      //medications
+      const medications = await this.medicationRepository
+        .createQueryBuilder('medication')
+        .where('medication.userId = :userId', {
+          userId: idUser,
+        })
+        .andWhere('DATE(medication.created_at) = :date', {
+          date: createReportDto.date,
+        })
+        .getMany();
+
+      //daily
+      const dailys = await this.dailyRepository
+        .createQueryBuilder('daily')
+        .where('daily.userId = :userId', {
+          userId: idUser,
+        })
+        .andWhere('DATE(daily.created_at) = :date', {
+          date: createReportDto.date,
+        })
+        .getMany();
+
+      console.log([
+        { countSymptoms: symptoms.length, symptoms },
+        { countAppointments: appointments.length, appointments },
+        { countMedications: medications.length, medications },
+        { countDailys: dailys.length, dailys },
+      ]);
+
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'reports fetched sucessfully.',
+        data: [
+          { countSymptoms: symptoms.length, symptoms },
+          { countAppointments: appointments.length, appointments },
+          { countMedications: medications.length, medications },
+          { countDailys: dailys.length, dailys },
+        ],
+        path: '/reports',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(`Failed to fetch reports | Error Message: ${error.message}`);
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch reports.',
+          path: '/reports/all',
           timestamp: Date.now(),
         },
         HttpStatus.BAD_REQUEST,

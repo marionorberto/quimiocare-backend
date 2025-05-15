@@ -22,14 +22,8 @@ export class Notifications {
   @Column({ name: 'content', type: 'text' })
   content: string;
 
-  @Column({ name: 'read', type: 'boolean', default: false })
-  read: boolean;
-
-  @Column({ name: 'read_at', type: 'datetime', nullable: true })
-  readAt: Date;
-
-  @Column({ name: 'link_action', type: 'varchar', nullable: true })
-  linkAction: string;
+  @Column({ name: 'img', type: 'text', nullable: true })
+  img: string;
 
   @ManyToOne(() => User, (users) => users.notifications)
   user: User;

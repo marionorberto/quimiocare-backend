@@ -232,4 +232,43 @@ export class MedicationService {
       );
     }
   }
+
+  async last(request: Request) {
+    try {
+      const { idUser } = request['user'];
+
+      const [last] = await this.medicationRepository.find({
+        where: {
+          user: {
+            id: idUser,
+          },
+        },
+        order: { createdAt: 'DESC' },
+        take: 1,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'last me fetched sucessfully.',
+        data: [last],
+        path: '/medications/last',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to fetch medications | Error Message: ${error.message}`,
+      );
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch medications.',
+          path: '/medications/last',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

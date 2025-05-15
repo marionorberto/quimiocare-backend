@@ -14,9 +14,6 @@ import * as bcryptjs from 'bcryptjs';
 import { Posts } from '../posts/posts.entity';
 import { Exclude } from 'class-transformer';
 import { Notifications } from '../notifications/notifications.entity';
-import { PostComments } from '../posts-comments/posts-comments.entity';
-import { PostLikes } from '../posts-likes/posts-likes.entity';
-import { PostSaved } from '../posts-saved/posts-saved.entity';
 import { Tags } from '../tags/tags.entity';
 import { Symptom } from '../symptoms/symptom.entity';
 import { Medication } from '../medications/medication.entity';
@@ -26,6 +23,7 @@ import { Daily } from '../daily/daily.entity';
 import { CollateralEffect } from '../collateral-effect/colllateral-effect.entity';
 import { Tips } from '../tips/tips.entity';
 import { Receitas } from '../receitas/receita.entity';
+import { suggestVideo } from '../suggest/suggest.entity';
 
 @Entity('Users')
 export class User {
@@ -62,30 +60,17 @@ export class User {
   })
   post: Posts[];
 
-  @OneToMany(() => PostLikes, (like) => like.post, { cascade: true })
-  postLike: PostLikes[];
-
   @OneToMany(() => Notifications, (notification) => notification.user, {
     cascade: true,
     eager: true,
   })
   notifications: Notifications[];
 
-  @OneToMany(() => PostComments, (comment) => comment.user, {
-    cascade: true,
-  })
-  comments: PostComments[];
-
   @Column({ name: 'reset_password_token', type: 'text', nullable: true })
   resetPasswordToken: string;
 
   @Column({ name: 'reset_password_expires', type: 'timestamp', nullable: true })
   resetPasswordExpires: Date;
-
-  @OneToMany(() => PostSaved, (saved) => saved.user, {
-    cascade: true,
-  })
-  saves: PostSaved[];
 
   @ManyToMany(() => Tags, {
     onUpdate: 'CASCADE',
@@ -116,6 +101,9 @@ export class User {
 
   @OneToMany(() => Tips, (tips) => tips.userDoctor)
   tip: Tips[];
+
+  @OneToMany(() => suggestVideo, (suggest) => suggest.user)
+  suggest: suggestVideo[];
 
   @OneToMany(() => Receitas, (receita) => receita.user)
   receita: Receitas[];

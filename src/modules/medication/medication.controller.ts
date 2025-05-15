@@ -54,4 +54,9 @@ export class MedicationController {
   async deleteOne(@Param('id') id: string) {
     return await this.medicationService.deleteOne(id);
   }
+
+  @Get('last')
+  async last(@Req() request: Request) {
+    return await this.medicationService.last(request);
+  }
 }

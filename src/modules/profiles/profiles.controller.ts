@@ -15,6 +15,8 @@ import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Request } from 'express';
 import { AuthGuard } from 'src/shared/auth/auth.guard';
 import { CreateProfileDoctorDto } from './dtos/create-profile-doctor.dto';
+import { CreateSuggestYTDto } from './dtos/create-suggest.dto ';
+import { CreateReportDto } from './dtos/create-report.dto';
 
 @Controller('profiles')
 export class ProfileController {
@@ -61,5 +63,20 @@ export class ProfileController {
   @Delete('delete/profile/:id')
   async deleteOne(@Param('id') id: string) {
     return await this.profileService.deleteOne(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('suggest/video')
+  suggestVideo(
+    @Req() request: Request,
+    @Body() createSuggestYTDto: CreateSuggestYTDto,
+  ) {
+    return this.profileService.suggestVideo(request, createSuggestYTDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('reports')
+  report(@Req() request: Request, @Body() createReportDto: CreateReportDto) {
+    return this.profileService.report(request, createReportDto);
   }
 }
