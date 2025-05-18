@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/database/entities/users/user.entity';
 import { TagsService } from 'src/modules/tags/tags.service';
 import { Request } from 'express';
+import { Profile } from 'src/database/entities/profiles/user-profile.entity';
+import { ProfileDoctor } from 'src/database/entities/profiles-doctor/user-profile-doctor.entity';
 
 @Injectable()
 export class PostsService {
@@ -17,11 +19,15 @@ export class PostsService {
     private readonly tagsService: TagsService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Profile)
+    private readonly profileRepository: Repository<Profile>,
+    @InjectRepository(ProfileDoctor)
+    private readonly profileDoctorRepository: Repository<ProfileDoctor>,
   ) {}
 
   async todas() {
     try {
-      const posts = await this.postRespository.find({
+      let posts = await this.postRespository.find({
         relations: {
           user: true,
         },
@@ -29,6 +35,52 @@ export class PostsService {
           createdAt: 'DESC',
         },
       });
+
+      if (posts.length > 0) {
+        const postWithPostIncluded = await Promise.all(
+          posts.map(async (item) => {
+            if (item.user.typeUser == 'DOCTOR') {
+              const profileDoctorData =
+                await this.profileDoctorRepository.findOne({
+                  where: {
+                    user: {
+                      id: item.user.id,
+                    },
+                  },
+                  relations: {
+                    user: true,
+                  },
+                  order: {
+                    createdAt: 'DESC',
+                  },
+                });
+
+              return { ...item, imgUrl: profileDoctorData.urlImg };
+            } else if (item.user.typeUser == 'PACIENTE') {
+              const profileUserData = await this.profileRepository.findOne({
+                where: {
+                  user: {
+                    id: item.user.id,
+                  },
+                },
+                relations: {
+                  user: true,
+                },
+                order: {
+                  createdAt: 'DESC',
+                },
+              });
+
+              // item.imgUrl = profileUserData.urlImg;
+              return { ...item, imgUrl: profileUserData.urlImg };
+            } else {
+              return;
+            }
+          }),
+        );
+
+        posts = postWithPostIncluded;
+      }
 
       return {
         statusCode: 200,
@@ -59,6 +111,8 @@ export class PostsService {
     try {
       const { idUser: idUserFromRequest } = request['user'];
 
+      let newPostWithImageProfile = [];
+
       // const userData = await this.userRepository.findOneBy({
       //   id: idUserFromRequest,
       // });
@@ -78,11 +132,62 @@ export class PostsService {
         },
       });
 
+      if (posts.length > 0) {
+        const postWithPostIncluded = await Promise.all(
+          posts.map(async (item) => {
+            if (item.user.typeUser == 'DOCTOR') {
+              const profileDoctorData =
+                await this.profileDoctorRepository.findOne({
+                  where: {
+                    user: {
+                      id: item.user.id,
+                    },
+                  },
+                  relations: {
+                    user: true,
+                  },
+                  order: {
+                    createdAt: 'DESC',
+                  },
+                });
+
+              return { ...item, imgUrl: profileDoctorData.urlImg };
+            } else if (item.user.typeUser == 'PACIENTE') {
+              const profileUserData = await this.profileRepository.findOne({
+                where: {
+                  user: {
+                    id: item.user.id,
+                  },
+                },
+                relations: {
+                  user: true,
+                },
+                order: {
+                  createdAt: 'DESC',
+                },
+              });
+
+              // item.imgUrl = profileUserData.urlImg;
+              return { ...item, imgUrl: profileUserData.urlImg };
+            } else {
+              return;
+            }
+          }),
+        );
+
+        newPostWithImageProfile = postWithPostIncluded;
+      }
+
       return {
         statusCode: 200,
         method: 'GET',
         message: 'post fetched sucessfully.',
-        data: [{ count: posts.length }, posts],
+        data: [
+          {
+            count: newPostWithImageProfile.length,
+          },
+          newPostWithImageProfile,
+        ],
         path: '/posts/post/:userId',
         timestamp: Date.now(),
       };
@@ -167,15 +272,14 @@ export class PostsService {
         id: idUserFromRequest,
       });
 
-      const notificationToSave = this.postRespository.create(
-        createNotificationsDto,
-      );
+      const postToSave = this.postRespository.create(createNotificationsDto);
 
       const { id, user, title, subtitle, content, tag, img, createdAt } =
         await this.postRespository.save({
-          ...notificationToSave,
+          ...postToSave,
           user: userData,
         });
+
       return {
         statusCode: 201,
         method: 'POST',

@@ -24,6 +24,7 @@ import { CollateralEffect } from '../collateral-effect/colllateral-effect.entity
 import { Tips } from '../tips/tips.entity';
 import { Receitas } from '../receitas/receita.entity';
 import { suggestVideo } from '../suggest/suggest.entity';
+import { Questions } from '../questions/question.entity';
 
 @Entity('Users')
 export class User {
@@ -88,6 +89,9 @@ export class User {
 
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointment: Appointment[];
+
+  @OneToMany(() => Questions, (question) => question.user)
+  question: Questions[];
 
   @OneToMany(() => Daily, (daily) => daily.user, { cascade: true })
   daily: Daily[];
