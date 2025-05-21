@@ -64,4 +64,9 @@ export class UsersController {
   ) {
     return await this.usersServices.updatePassword(request, updatePasswordDto);
   }
+
+  @Get('lastUsersRegistered')
+  async lastUsersRegistered() {
+    return await this.usersServices.lastUsersRegistered();
+  }
 }

@@ -372,4 +372,55 @@ export class UsersService {
       );
     }
   }
+
+  async lastUsersRegistered() {
+    try {
+      const [lastTwoDoctors, lastTwoPatients] = await Promise.all([
+        this.userRepository.find({
+          where: {
+            typeUser: EnumTypeUser.doctor,
+          },
+          order: { createdAt: 'DESC' },
+          take: 2,
+        }),
+        this.userRepository.find({
+          where: {
+            typeUser: EnumTypeUser.paciente,
+          },
+          order: { createdAt: 'DESC' },
+          take: 2,
+        }),
+      ]);
+
+      console.log(lastTwoDoctors, lastTwoPatients);
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: ' fetched sucessfully',
+        data: {
+          lastTwoDoctors,
+          lastTwoPatients,
+        },
+        path: '/users/lastusers',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to lastUsersRegistered| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: 'Failed to update Password',
+          error: error.message,
+          path: '/users/password/user/update',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

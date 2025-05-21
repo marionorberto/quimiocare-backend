@@ -59,4 +59,9 @@ export class AppointmentController {
   async last(@Req() request: Request) {
     return await this.appointmentServices.last(request);
   }
+
+  @Get('count')
+  async count() {
+    return await this.appointmentServices.count();
+  }
 }

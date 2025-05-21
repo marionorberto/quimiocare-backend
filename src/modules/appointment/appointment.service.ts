@@ -284,4 +284,39 @@ export class AppointmentsService {
       );
     }
   }
+
+  async count() {
+    try {
+      const totalAppointments = await this.appointmentRepository.count();
+
+      console.log('total consultas', totalAppointments);
+
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'total appointment fetched sucessfully.',
+        data: [
+          {
+            totalAppointments,
+          },
+        ],
+        path: '/appointments/count',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to fetch appointments count | Error Message: ${error.message}`,
+      );
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch appointments count.',
+          path: '/appointments/last',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
