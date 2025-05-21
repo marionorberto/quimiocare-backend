@@ -28,6 +28,7 @@ import { join } from 'path';
 import { DailyModule } from './modules/daily/daily.module';
 import { ReceitaModule } from './modules/receitas/receitas.module';
 import { suggestVideo } from './database/entities/suggest/suggest.entity';
+import { QuestionModule } from './modules/questions/question.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -73,6 +74,7 @@ import { suggestVideo } from './database/entities/suggest/suggest.entity';
     DailyModule,
     ReceitaModule,
     suggestVideo,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [

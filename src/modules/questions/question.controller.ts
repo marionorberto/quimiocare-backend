@@ -18,7 +18,7 @@ import { AuthGuard } from '../../shared/auth/auth.guard';
 import { Request } from 'express';
 
 @UseGuards(AuthGuard)
-@Controller('questionsController')
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
@@ -28,10 +28,9 @@ export class QuestionController {
     return await this.questionService.findAll(request);
   }
 
-  @Get('question/:id')
-  @UseInterceptors(ClassSerializerInterceptor)
-  async findByPk(@Param('id') id: string) {
-    return await this.questionService.findByPk(id);
+  @Get('todas')
+  async todas() {
+    return await this.questionService.todas();
   }
 
   @Post('create/question')

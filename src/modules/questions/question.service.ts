@@ -6,28 +6,166 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { User } from 'src/database/entities/users/user.entity';
 import { Questions } from 'src/database/entities/questions/question.entity';
+import { ProfileDoctor } from 'src/database/entities/profiles-doctor/user-profile-doctor.entity';
+import { Profile } from 'src/database/entities/profiles/user-profile.entity';
 @Injectable()
 export class QuestionService {
   private questionRepository: Repository<Questions>;
   private userRepository: Repository<User>;
+  private profileDoctorRepository: Repository<ProfileDoctor>;
+  private profileRepository: Repository<Profile>;
   constructor(
     private readonly datasource: DataSource,
     private readonly userServices: UsersService,
   ) {
     this.questionRepository = this.datasource.getRepository(Questions);
     this.userRepository = this.datasource.getRepository(User);
+    this.profileDoctorRepository = this.datasource.getRepository(ProfileDoctor);
+    this.profileRepository = this.datasource.getRepository(Profile);
   }
 
   async findAll(request: Request) {
     try {
       const { idUser } = request['user'];
 
-      const allquestion = await this.questionRepository
-        .createQueryBuilder('question')
-        .where('question.userId = :userId', {
-          userId: idUser,
-        })
-        .getMany();
+      let allquestion = await this.questionRepository.find({
+        relations: {
+          user: true,
+        },
+        where: {
+          user: {
+            id: idUser,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
+      if (allquestion.length > 0) {
+        const questionWithImgIncluded = await Promise.all(
+          allquestion.map(async (item) => {
+            if (item.user.typeUser == 'DOCTOR') {
+              const profileDoctorData =
+                await this.profileDoctorRepository.findOne({
+                  where: {
+                    user: {
+                      id: item.user.id,
+                    },
+                  },
+                  relations: {
+                    user: true,
+                  },
+                  order: {
+                    createdAt: 'DESC',
+                  },
+                });
+
+              return { ...item, imgUrl: profileDoctorData.urlImg };
+            } else if (item.user.typeUser == 'PACIENTE') {
+              const profileUserData = await this.profileRepository.findOne({
+                where: {
+                  user: {
+                    id: item.user.id,
+                  },
+                },
+                relations: {
+                  user: true,
+                },
+                order: {
+                  createdAt: 'DESC',
+                },
+              });
+
+              // item.imgUrl = profileUserData.urlImg;
+              return { ...item, imgUrl: profileUserData.urlImg };
+            } else {
+              return;
+            }
+          }),
+        );
+        allquestion = questionWithImgIncluded;
+      }
+      return {
+        statusCode: 200,
+        method: 'GET',
+        message: 'questions fetched sucessfully.',
+        data: [{ count: allquestion.length }, allquestion],
+        path: '/questions/all',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to fetch questions | Error Message: ${error.message}`,
+      );
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'GET',
+          message: 'Failure to fetch questions.',
+          path: '/question/create',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async todas() {
+    try {
+      let allquestion = await this.questionRepository.find({
+        relations: {
+          user: true,
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
+      if (allquestion.length > 0) {
+        const questionWithImgIncluded = await Promise.all(
+          allquestion.map(async (item) => {
+            if (item.user.typeUser == 'DOCTOR') {
+              const profileDoctorData =
+                await this.profileDoctorRepository.findOne({
+                  where: {
+                    user: {
+                      id: item.user.id,
+                    },
+                  },
+                  relations: {
+                    user: true,
+                  },
+                  order: {
+                    createdAt: 'DESC',
+                  },
+                });
+
+              return { ...item, imgUrl: profileDoctorData.urlImg };
+            } else if (item.user.typeUser == 'PACIENTE') {
+              const profileUserData = await this.profileRepository.findOne({
+                where: {
+                  user: {
+                    id: item.user.id,
+                  },
+                },
+                relations: {
+                  user: true,
+                },
+                order: {
+                  createdAt: 'DESC',
+                },
+              });
+
+              // item.imgUrl = profileUserData.urlImg;
+              return { ...item, imgUrl: profileUserData.urlImg };
+            } else {
+              return;
+            }
+          }),
+        );
+        allquestion = questionWithImgIncluded;
+      }
 
       return {
         statusCode: 200,
