@@ -30,7 +30,7 @@ import { ReceitaModule } from './modules/receitas/receitas.module';
 import { suggestVideo } from './database/entities/suggest/suggest.entity';
 import { QuestionModule } from './modules/questions/question.module';
 import { ActivityModule } from './modules/activities/activities.module';
-import { MyPatients } from './database/entities/my-patients/my-patiets.entity';
+import { MyPatientsModule } from './modules/my-patients/my-patients.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
