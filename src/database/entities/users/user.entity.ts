@@ -25,6 +25,8 @@ import { Tips } from '../tips/tips.entity';
 import { Receitas } from '../receitas/receita.entity';
 import { suggestVideo } from '../suggest/suggest.entity';
 import { Questions } from '../questions/question.entity';
+import { Activities } from '../activities/activities.entity';
+import { MyPatients } from '../my-patients/my-patiets.entity';
 
 @Entity('Users')
 export class User {
@@ -95,6 +97,14 @@ export class User {
 
   @OneToMany(() => Daily, (daily) => daily.user, { cascade: true })
   daily: Daily[];
+
+  @OneToMany(() => MyPatients, (myPatients) => myPatients.doctor, {
+    cascade: true,
+  })
+  doctor: MyPatients[];
+
+  @OneToMany(() => Activities, (activity) => activity.user)
+  activity: Activities[];
 
   @OneToMany(
     () => CollateralEffect,

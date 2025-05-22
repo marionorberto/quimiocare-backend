@@ -69,4 +69,14 @@ export class UsersController {
   async lastUsersRegistered() {
     return await this.usersServices.lastUsersRegistered();
   }
+
+  @Put('ban/:id')
+  async ban(@Param('id') id: string) {
+    return await this.usersServices.ban(id);
+  }
+
+  @Put('active/:id')
+  async active(@Param('id') id: string) {
+    return await this.usersServices.active(id);
+  }
 }

@@ -61,7 +61,11 @@ export class QuestionService {
                   },
                 });
 
-              return { ...item, imgUrl: profileDoctorData.urlImg };
+              return {
+                ...item,
+                imgUrl: profileDoctorData.urlImg,
+                phone: profileDoctorData.phoneNumber,
+              };
             } else if (item.user.typeUser == 'PACIENTE') {
               const profileUserData = await this.profileRepository.findOne({
                 where: {
@@ -78,7 +82,12 @@ export class QuestionService {
               });
 
               // item.imgUrl = profileUserData.urlImg;
-              return { ...item, imgUrl: profileUserData.urlImg };
+
+              return {
+                ...item,
+                imgUrl: profileUserData.urlImg,
+                phone: profileUserData.phoneNumber,
+              };
             } else {
               return;
             }
@@ -141,7 +150,11 @@ export class QuestionService {
                   },
                 });
 
-              return { ...item, imgUrl: profileDoctorData.urlImg };
+              return {
+                ...item,
+                imgUrl: profileDoctorData.urlImg,
+                phone: profileDoctorData.phoneNumber,
+              };
             } else if (item.user.typeUser == 'PACIENTE') {
               const profileUserData = await this.profileRepository.findOne({
                 where: {

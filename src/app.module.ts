@@ -29,6 +29,8 @@ import { DailyModule } from './modules/daily/daily.module';
 import { ReceitaModule } from './modules/receitas/receitas.module';
 import { suggestVideo } from './database/entities/suggest/suggest.entity';
 import { QuestionModule } from './modules/questions/question.module';
+import { ActivityModule } from './modules/activities/activities.module';
+import { MyPatients } from './database/entities/my-patients/my-patiets.entity';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -75,6 +77,8 @@ import { QuestionModule } from './modules/questions/question.module';
     ReceitaModule,
     suggestVideo,
     QuestionModule,
+    ActivityModule,
+    MyPatientsModule,
   ],
   controllers: [AppController],
   providers: [

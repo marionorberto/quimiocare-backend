@@ -24,6 +24,9 @@ export class UsersService {
 
       const allPacients: User[] = await this.userRepository.find({
         where: { typeUser: EnumTypeUser.paciente },
+        relations: {
+          tags: true,
+        },
         order: {
           createdAt: 'DESC',
         },
@@ -245,12 +248,25 @@ export class UsersService {
   async findOne(data: any) {
     try {
       const userFetched: User = await this.userRepository.findOne(data);
+
+      if (!userFetched.active) {
+        throw new HttpException(
+          {
+            statusCode: 404,
+            method: 'GET',
+            message: 'Usuário Desativado.',
+            path: '/users/user/id',
+            timestamp: Date.now(),
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
       if (!userFetched)
         throw new HttpException(
           {
             statusCode: 404,
             method: 'GET',
-            message: 'User Email Not Found.',
+            message: 'Usuário não encontrado.',
             path: '/users/user/id',
             timestamp: Date.now(),
           },
@@ -270,7 +286,7 @@ export class UsersService {
         {
           statusCode: 400,
           method: 'POST',
-          message: 'Failed to fetch User',
+          message: error.message,
           error: error.message,
           path: '/users/user/id',
           timestamp: Date.now(),
@@ -401,6 +417,80 @@ export class UsersService {
         data: {
           lastTwoDoctors,
           lastTwoPatients,
+        },
+        path: '/users/lastusers',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to lastUsersRegistered| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: 'Failed to update Password',
+          error: error.message,
+          path: '/users/password/user/update',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async ban(id: string) {
+    try {
+      console.log('oieee', id);
+      const bannedUser = this.userRepository.update(id, {
+        active: false,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: ' fetched sucessfully',
+        data: {
+          banned: true,
+          bannedUser,
+        },
+        path: '/users/lastusers',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to lastUsersRegistered| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: 'Failed to update Password',
+          error: error.message,
+          path: '/users/password/user/update',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async active(id: string) {
+    try {
+      console.log('oieee', id);
+      const bannedUser = this.userRepository.update(id, {
+        active: true,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: ' activado sucessfully',
+        data: {
+          banned: true,
+          bannedUser,
         },
         path: '/users/lastusers',
         timestamp: Date.now(),

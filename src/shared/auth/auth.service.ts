@@ -76,7 +76,7 @@ export class AuthService {
         {
           statusCode: 401,
           method: 'POST',
-          message: 'Email ou Password Inválida. Tente novamente!',
+          message: error.response.message,
           error: error.message,
           path: '/auth/login',
           timestamp: Date.now(),
