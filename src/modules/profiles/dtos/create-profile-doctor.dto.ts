@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 
 export class CreateProfileDoctorDto {
-  @MaxLength(25, { message: 'a biografia deve ter no máximo 25 caracters' })
+  @MaxLength(50, { message: 'a biografia deve ter no máximo 50 caracters' })
   @MinLength(3, { message: 'a biografia deve ter no minimo 3 caracteres' })
   @IsString({ message: 'a biografia deve ser uma string' })
   @IsNotEmpty({ message: 'a biografia não poder estar nula' })
@@ -18,19 +18,19 @@ export class CreateProfileDoctorDto {
   @IsNotEmpty({ message: 'sexo não pode estar nulo' })
   sex: string;
 
-  @MaxLength(25, { message: 'telefone deve ter no maximo 25 caracteres' })
+  @MaxLength(13, { message: 'telefone deve ter no maximo 13 caracteres' })
   @IsString({ message: 'telefone deve ser string' })
   @IsNotEmpty({ message: 'telefone não poder estar vazia' })
   @IsOptional()
   phoneNumber?: string;
 
-  @MaxLength(20, { message: 'endereco deve ter no maximo 25 caracteres' })
+  @MaxLength(50, { message: 'endereco deve ter no maximo 50 caracteres' })
   @MinLength(9, { message: 'endereco deve ter no minimo 9 caracteres' })
   @IsString({ message: 'endereco deve ser uma string' })
   @IsNotEmpty({ message: 'telefone não poder estar vazia' })
   address: string;
 
-  @MaxLength(25, { message: 'trabalho deve ter no minimo 25 caracteres' })
+  @MaxLength(50, { message: 'trabalho deve ter no minimo 50 caracteres' })
   @IsString({ message: 'trabalho deve ser uma string' })
   @IsNotEmpty({ message: 'Trabalho não pode estar nulo' })
   job: string;

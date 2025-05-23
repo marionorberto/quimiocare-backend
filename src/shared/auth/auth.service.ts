@@ -17,9 +17,12 @@ export class AuthService {
     this.userRepository = this.datasource.getRepository(User);
   }
 
-  async signIn(
-    signInDto: SignInDto,
-  ): Promise<{ acess_token: string; typeUser: string }> {
+  async signIn(signInDto: SignInDto): Promise<{
+    acess_token: string;
+    typeUser: string;
+    username: string;
+    idUser: string;
+  }> {
     try {
       const userData = await this.usersService.findOne({
         where: {
@@ -66,6 +69,8 @@ export class AuthService {
       return {
         acess_token: await this.jwtService.signAsync(payloads),
         typeUser: userData.typeUser,
+        username: userData.username,
+        idUser: userData.id,
       };
     } catch (error) {
       console.log(

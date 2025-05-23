@@ -1,14 +1,12 @@
 import {
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 
-@Entity('my-patiets')
+@Entity('my_patients')
 export class MyPatients {
   @PrimaryGeneratedColumn('uuid', { name: 'my_patient_id' })
   id: string;
@@ -19,12 +17,10 @@ export class MyPatients {
   })
   doctor: User;
 
-  @OneToOne(() => User, {
-    cascade: true,
+  @ManyToOne(() => User, (user) => user.patient, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn()
   patient: User;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

@@ -22,6 +22,9 @@ export class Tips {
   @ManyToOne(() => User, (user) => user.tip)
   userDoctor: User;
 
+  @Column({ name: 'active', type: 'boolean', default: false })
+  active: boolean;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 

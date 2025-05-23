@@ -103,6 +103,11 @@ export class User {
   })
   doctor: MyPatients[];
 
+  @OneToMany(() => MyPatients, (myPatients) => myPatients.patient, {
+    cascade: true,
+  })
+  patient: MyPatients[];
+
   @OneToMany(() => Activities, (activity) => activity.user)
   activity: Activities[];
 

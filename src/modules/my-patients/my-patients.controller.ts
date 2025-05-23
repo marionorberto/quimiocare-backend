@@ -48,4 +48,14 @@ export class MyPatientsController {
   async last(@Req() request: Request) {
     return await this.myPatientsService.last(request);
   }
+
+  @Get('doctor/patients')
+  findAllPatientsFromDoctor(@Req() request: Request) {
+    return this.myPatientsService.findAllPatientsFromDoctor(request);
+  }
+
+  @Get('patient/doctors')
+  findDoctorFromPatient(@Req() request: Request) {
+    return this.myPatientsService.findDoctorFromPatient(request);
+  }
 }
