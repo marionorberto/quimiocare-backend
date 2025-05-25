@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Delete,
   UseGuards,
   UseInterceptors,
@@ -13,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ActivityService } from './activities.service';
 import { CreateActivityDto } from './dtos/create-activities.dto';
-import { UpdateActivityDto } from './dtos/update-activities.dto';
 import { AuthGuard } from '../../shared/auth/auth.guard';
 import { Request } from 'express';
 
@@ -42,13 +40,13 @@ export class ativitiesController {
     return this.ativitiesServices.create(createativitiesDto, request);
   }
 
-  @Put('update/ativities/:id')
-  async updateOne(
-    @Param('id') id: string,
-    @Body() updateUsersDto: UpdateActivityDto,
-  ) {
-    return await this.ativitiesServices.updateOne(id, updateUsersDto);
-  }
+  // @Put('update/ativities/:id')
+  // async updateOne(
+  //   @Param('id') id: string,
+  //   @Body() updateUsersDto: UpdateActivityDto,
+  // ) {
+  //   return await this.ativitiesServices.updateOne(id, updateUsersDto);
+  // }
 
   @Delete('delete/ativities/:id')
   async deleteOne(@Param('id') id: string) {
@@ -63,5 +61,10 @@ export class ativitiesController {
   @Get('count')
   async count() {
     return await this.ativitiesServices.count();
+  }
+
+  @Get('lastActivities')
+  async lastActivities(@Req() request: Request) {
+    return await this.ativitiesServices.lastActivities(request);
   }
 }

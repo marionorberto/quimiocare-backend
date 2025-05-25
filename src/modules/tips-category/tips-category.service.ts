@@ -101,7 +101,7 @@ export class TipsCategoryService {
       return {
         statusCode: 201,
         method: 'POST',
-        message: 'category created sucessfully',
+        message: 'Dica criada com successo!',
         data: { id, description, createdAt },
         path: '/TipsCategories/create/user',
         timestamp: Date.now(),
@@ -115,7 +115,7 @@ export class TipsCategoryService {
         {
           statusCode: 400,
           method: 'POST',
-          message: 'Failed to create new Category',
+          message: error.message,
           error: error.message,
           path: '/tipsCategory/create/category',
           timestamp: Date.now(),

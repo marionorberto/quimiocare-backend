@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
+import { ActivityMedications } from '../activity-medication/activity-medication.entity';
 
 @Entity('Medications')
 export class Medication {
@@ -29,6 +31,12 @@ export class Medication {
     onUpdate: 'CASCADE',
   })
   user: User;
+
+  @OneToMany(() => ActivityMedications, (activity) => activity.medication, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  activityMedication: ActivityMedications[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

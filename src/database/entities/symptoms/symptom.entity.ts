@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { EnumSymptomSeverity } from 'src/modules/symptoms/interfaces/types';
+import { ActivitySymptoms } from '../activity-symptom/activity-symptom.entity';
 
 @Entity('Symptoms')
 export class Symptom {
@@ -27,6 +29,9 @@ export class Symptom {
     onUpdate: 'CASCADE',
   })
   user: User;
+
+  @OneToMany(() => ActivitySymptoms, (as) => as.symptom)
+  activitySymptom: ActivitySymptoms[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

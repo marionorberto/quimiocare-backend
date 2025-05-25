@@ -25,6 +25,14 @@ export class TipsService {
   async findAll() {
     try {
       const alltips = await this.tipsRepository.find({
+        where: {
+          active: false,
+          reject: false,
+        },
+        relations: {
+          userDoctor: true,
+          category: true,
+        },
         order: {
           createdAt: 'DESC',
         },
@@ -62,6 +70,8 @@ export class TipsService {
           userDoctor: {
             id: idUser,
           },
+          reject: false,
+          active: true,
         },
         relations: {
           category: true,
@@ -99,6 +109,9 @@ export class TipsService {
       const allTips = await this.tipsRepository.find({
         order: {
           createdAt: 'DESC',
+        },
+        where: {
+          active: true,
         },
         relations: {
           category: true,
@@ -282,6 +295,79 @@ export class TipsService {
           message: 'Failed to delete Tiptips',
           error: error.message,
           path: '/Tips/delete/tips/:id',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async active(id: string) {
+    try {
+      const activedTip = this.tipsRepository.update(id, {
+        active: true,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: ' activado sucessfully',
+        data: {
+          active: true,
+          activedTip,
+        },
+        path: '/tips/active',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to lastUsersRegistered| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: error.message,
+          error: error.message,
+          path: '/users/password/user/update',
+          timestamp: Date.now(),
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async reject(id: string) {
+    try {
+      const bannedUser = this.tipsRepository.update(id, {
+        active: false,
+        reject: true,
+      });
+
+      return {
+        statusCode: 200,
+        method: 'PUT',
+        message: ' Reijeitada com sucesso',
+        data: {
+          active: true,
+          bannedUser,
+        },
+        path: '/users/lastusers',
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log(
+        `Failed to lastUsersRegistered| Error Message: ${error.message}`,
+      );
+
+      throw new HttpException(
+        {
+          statusCode: 400,
+          method: 'PUT',
+          message: error.message,
+          error: error.message,
+          path: '/users/password/user/update',
           timestamp: Date.now(),
         },
         HttpStatus.BAD_REQUEST,

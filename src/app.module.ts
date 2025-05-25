@@ -31,6 +31,7 @@ import { suggestVideo } from './database/entities/suggest/suggest.entity';
 import { QuestionModule } from './modules/questions/question.module';
 import { ActivityModule } from './modules/activities/activities.module';
 import { MyPatientsModule } from './modules/my-patients/my-patients.module';
+import { AlertsModule } from './modules/alert/alert.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -79,6 +80,7 @@ import { MyPatientsModule } from './modules/my-patients/my-patients.module';
     QuestionModule,
     ActivityModule,
     MyPatientsModule,
+    AlertsModule,
   ],
   controllers: [AppController],
   providers: [

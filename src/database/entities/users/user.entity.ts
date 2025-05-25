@@ -27,6 +27,7 @@ import { suggestVideo } from '../suggest/suggest.entity';
 import { Questions } from '../questions/question.entity';
 import { Activities } from '../activities/activities.entity';
 import { MyPatients } from '../my-patients/my-patiets.entity';
+import { Alerts } from '../alerts/alert.entity';
 
 @Entity('Users')
 export class User {
@@ -120,6 +121,9 @@ export class User {
 
   @OneToMany(() => Tips, (tips) => tips.userDoctor)
   tip: Tips[];
+
+  @OneToMany(() => Alerts, (alert) => alert.user)
+  alert: Alerts[];
 
   @OneToMany(() => suggestVideo, (suggest) => suggest.user)
   suggest: suggestVideo[];

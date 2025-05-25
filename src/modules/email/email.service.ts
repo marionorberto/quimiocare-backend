@@ -12,6 +12,7 @@ export class EmailService {
         subject: 'QUIMIOCARE',
         text: 'Recuperação de senha.',
         template: './welcome',
+        sender: 'eabhealth24@gmail.com',
         context: {
           username,
           token,

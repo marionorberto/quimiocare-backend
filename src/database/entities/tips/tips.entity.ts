@@ -13,7 +13,7 @@ export class Tips {
   @PrimaryGeneratedColumn('uuid', { name: 'tip_id' })
   id: string;
 
-  @Column({ name: 'description', type: 'varchar' })
+  @Column({ name: 'description', type: 'varchar', unique: false })
   description: string;
 
   @ManyToOne(() => TipsCategory, (category) => category.tip)
@@ -24,6 +24,9 @@ export class Tips {
 
   @Column({ name: 'active', type: 'boolean', default: false })
   active: boolean;
+
+  @Column({ name: 'reject', type: 'boolean', default: false })
+  reject: boolean;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

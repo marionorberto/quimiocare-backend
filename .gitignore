@@ -3,7 +3,7 @@
 /node_modules
 /build
 
-/src/config/datasource.ts
+# /src/config/datasource.ts
 # Logs
 logs
 *.log

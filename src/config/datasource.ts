@@ -1,26 +1,25 @@
 import { DataSource } from 'typeorm';
-
+import { ConfigService } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
 
-@Global() // makes the module available globally for other modules once imported in the app modules
+@Global()
 @Module({
   imports: [],
   providers: [
     {
       provide: DataSource, // add the datasource as a provider
-      inject: [],
-      useFactory: async () => {
-        // using the factory function to create the datasource instance
+      inject: [ConfigService], // injetando o ConfigService corretamente
+      useFactory: async (configService: ConfigService) => {
         try {
           const dataSource = new DataSource({
             type: 'mysql',
             host: '127.0.0.1',
             port: 3306,
-            username: 'marionorberto',
-            password: 'Cavera?@mau2875',
-            database: 'quimiocare',
+            username: configService.get<string>('DB_USERNAME'),
+            password: configService.get<string>('DB_PASSWORD'),
+            database: configService.get<string>('DB_NAME'),
             synchronize: true,
-            logging: true,
+            logging: false,
             entities: [`${__dirname}/../database/**/**.entity{.ts,.js}`], // this will automatically load all entity file in the src folder
           });
           await dataSource.initialize(); // initialize the data source

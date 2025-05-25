@@ -53,4 +53,14 @@ export class TipsController {
   async deleteOne(@Param('id') id: string) {
     return await this.tipsServices.deleteOne(id);
   }
+
+  @Put('active/:id')
+  async active(@Param('id') id: string) {
+    return await this.tipsServices.active(id);
+  }
+
+  @Put('reject/:id')
+  async reject(@Param('id') id: string) {
+    return await this.tipsServices.reject(id);
+  }
 }
